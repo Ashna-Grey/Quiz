@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Which MTTS Element Are You?</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #a2d4ff, #e2f0ff);
+      color: #003366;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 50, 0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      background-color: #0077cc;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .question {
+      display: none;
+    }
+    .question.active {
+      display: block;
+    }
+    .option {
+      margin: 12px 0;
+      background-color: #dff1ff;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .option:hover {
+      background-color: #b2e0ff;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #result {
+      display: none;
+    }
+    .emoji {
+      font-size: 2rem;
+    }
+    img.element-img {
+      width: 100px;
+      margin: 20px auto;
+      display: block;
+    }
+    a.follow-link {
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="start">
+  <h1>✨ Which MTTS Element Are You? ✨</h1>
+  <p>Find out if you're an Antenna 📡, Waveguide 🔷, Filter 🛡️ or Oscillator 🔁</p>
+  <button onclick="startQuiz()">Start Quiz 🚀</button>
+</div>
+
+<div class="container question" id="quiz"></div>
+
+<div class="container" id="result">
+  <h1 id="result-title"></h1>
+  <div id="result-img"></div>
+  <p id="result-desc"></p>
+  <p>💙 <a class="follow-link" href="https://www.instagram.com/ieee_mtts_sbc_uemk?igsh=Mm5jYjZ3Y3RkNWRm" target="_blank">Follow our page to get more fun activities</a></p>
+</div>
+
+<script>
+const questions = [
+  ["What do people value most about you?", ["Your ability to communicate", "Your depth & clarity", "Your protective nature", "Your unpredictable creativity"]],
+  ["How do you handle pressure?", ["Talk it out and seek support", "Stay calm, think logically", "Absorb stress, protect others", "Channel it into wild ideas"]],
+  ["What’s your ideal role in a team?", ["Spokesperson or presenter", "Strategist or planner", "Emotional support & harmony", "Idea generator"]],
+  ["How do you process information?", ["Through conversations", "Structuring it in your head", "Feeling the intent behind it", "Jumping from idea to idea"]],
+  ["Which natural element do you relate to most?", ["Air", "Earth", "Water", "Fire"]],
+  ["You’re given a complex problem. You:", ["Ask around, build connections", "Break it into logical steps", "Try to understand everyone’s POV", "Dive into creative chaos"]],
+  ["In a social setting, you are:", ["The one connecting everyone", "Observing & analyzing", "Making sure everyone’s okay", "Doing something surprising"]],
+  ["Your workspace is:", ["Full of sticky notes & calls", "Organized and minimal", "Full of small thoughtful items", "A mess, but you know where stuff is"]],
+  ["Your friends come to you when they need:", ["Advice on how to express things", "Solutions to tough problems", "Comfort and support", "A spark of inspiration"]],
+  ["One word that defines you:", ["Expressive", "Analytical", "Intuitive", "Inventive"]],
+];
+
+const components = ["Antenna", "Waveguide", "Filter", "Oscillator"];
+const scores = [0, 0, 0, 0];
+let current = 0;
+let answers = [];
+
+function startQuiz() {
+  document.getElementById("start").style.display = "none";
+  showQuestion();
+}
+
+function showQuestion() {
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+  quiz.classList.add("active");
+  const [q, opts] = questions[current];
+  const questionHTML = `<h2>${current + 1}/10. ${q}</h2>` +
+    opts.map((opt, i) => `<div class="option" onclick="select(${i})">${opt}</div>`).join('') +
+    `<div class="nav-buttons">` +
+    (current > 0 ? `<button onclick="prev()">⬅️ Back</button>` : `<div></div>`) +
+    `</div>`;
+  quiz.innerHTML = questionHTML;
+}
+
+function select(i) {
+  answers[current] = i;
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    calculateResult();
+  }
+}
+
+function prev() {
+  current--;
+  showQuestion();
+}
+
+function calculateResult() {
+  answers.forEach(i => scores[i]++);
+  const max = Math.max(...scores);
+  const index = scores.indexOf(max);
+  const component = components[index];
+
+  const titles = {
+    "Antenna": "📡 Antenna – The Communicator",
+    "Waveguide": "🔷 Waveguide – The Thinker",
+    "Filter": "🛡️ Filter – The Protector",
+    "Oscillator": "🔁 Oscillator – The Creator"
+  };
+
+  const descriptions = {
+    "Antenna": "You’re expressive, always connecting people and ideas. Like an antenna transmits and receives signals, you thrive in social environments and are great at getting messages across. You’re the voice that turns silence into signal.",
+    "Waveguide": "Logical, composed, and deeply thoughtful — you channel energy efficiently, just like a waveguide channels microwaves. You don’t like chaos; instead, you provide structured paths for ideas to travel through.",
+    "Filter": "You sense what’s important and eliminate the rest. Like a microwave filter removes unwanted frequencies, you shield yourself and others from negativity. You're emotional but precise, intuitive but purposeful.",
+    "Oscillator": "You buzz with ideas and spark others with your infectious energy. Just as an oscillator creates a wave from nothing, you birth creativity out of thin air. Sometimes chaotic, always original — you are the pulse of innovation."
+  };
+
+  const images = {
+    "Antenna": "https://upload.wikimedia.org/wikipedia/commons/8/84/Yagi-Uda_antenna_animation.gif",
+    "Waveguide": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Waveguide_E-field.svg/1200px-Waveguide_E-field.svg.png",
+    "Filter": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Bandpass_Filter_Example.svg/1920px-Bandpass_Filter_Example.svg.png",
+    "Oscillator": "https://upload.wikimedia.org/wikipedia/commons/1/11/Sinusoidal.gif"
+  };
+
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result-title").innerText = titles[component];
+  document.getElementById("result-desc").innerText = descriptions[component];
+  document.getElementById("result-img").innerHTML = `<img class="element-img" src="${images[component]}" alt="${component}">`;
+  document.getElementById("result").style.display = "block";
+}
+</script>
+</body>
+</html>
